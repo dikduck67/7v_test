@@ -2,35 +2,98 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Оценка фруктов и овощей</title>
+<title>Оценка фруктов</title>
+
 <style>
 body {
-    font-family: Arial;
-    background: #7fffd4;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: #b026ff;
     text-align: center;
+    background: black;
+    overflow-x: hidden;
 }
+
+/* НЕОНОВАЯ СЕТКА */
+body::before {
+    content: "";
+    position: fixed;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background:
+        linear-gradient(#b026ff22 1px, transparent 1px),
+        linear-gradient(90deg, #b026ff22 1px, transparent 1px);
+    background-size: 40px 40px;
+    transform: perspective(800px) rotateX(60deg);
+    animation: moveGrid 10s linear infinite;
+}
+
+@keyframes moveGrid {
+    0% {
+        transform: perspective(800px) rotateX(60deg) translateY(0);
+    }
+    100% {
+        transform: perspective(800px) rotateX(60deg) translateY(40px);
+    }
+}
+
+/* КОНТЕЙНЕР */
 .container {
-    background: #7fffd4;
+    background: rgba(0,0,0,0.85);
+    border: 1px solid #b026ff;
+    box-shadow: 0 0 15px #b026ff;
     padding: 20px;
-    margin: 20px auto;
-    width: 400px;
-    border-radius: 10px;
+    margin: 40px auto;
+    width: 420px;
+    border-radius: 12px;
+    position: relative;
+    z-index: 2;
 }
-input, button, select {
-    margin: 5px;
+
+/* НЕОНОВЫЙ ТЕКСТ */
+h2, h3 {
+    text-shadow: 0 0 10px #b026ff;
+}
+
+/* INPUT */
+input, textarea {
+    background: black;
+    border: 1px solid #b026ff;
+    color: #b026ff;
     padding: 5px;
+    border-radius: 5px;
 }
+
+/* КНОПКИ */
+button {
+    background: transparent;
+    border: 1px solid #b026ff;
+    color: #b026ff;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 6px;
+    box-shadow: 0 0 10px #b026ff;
+}
+
+button:hover {
+    background: #b026ff;
+    color: black;
+}
+
+/* СКРЫТЫЕ */
 .hidden {
     display: none;
 }
 </style>
+
 </head>
 <body>
 
 <div class="container" id="login">
     <h2>Введите имя</h2>
-    <input type="text" id="name" placeholder="Ваше имя">
-    <br>
+    <input type="text" id="name" placeholder="Ваше имя"><br><br>
     <button onclick="start()">Начать</button>
     <br><br>
     <button onclick="adminLogin()">Зайти как админ</button>
@@ -67,7 +130,7 @@ function start() {
 
 function showQuiz() {
     const quiz = document.getElementById("quiz");
-    quiz.innerHTML = "<h2>Оцените однакласников</h2>";
+    quiz.innerHTML = "<h2>Оцените продукты</h2>";
 
     products.forEach((p, i) => {
         quiz.innerHTML += `
