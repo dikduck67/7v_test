@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Оценка фруктов и овощей</title>
+<style>
+body {
+    font-family: Arial;
+    background: #f0f0f0;
+    text-align: center;
+}
+.container {
+    background: white;
+    padding: 20px;
+    margin: 20px auto;
+    width: 400px;
+    border-radius: 10px;
+}
+input, button, select {
+    margin: 5px;
+    padding: 5px;
+}
+.hidden {
+    display: none;
+}
+</style>
+</head>
+<body>
+
+<div class="container" id="login">
+    <h2>Введите имя</h2>
+    <input type="text" id="name" placeholder="Ваше имя">
+    <br>
+    <button onclick="start()">Начать</button>
+    <br><br>
+    <button onclick="adminLogin()">Зайти как админ</button>
+</div>
+
+<div class="container hidden" id="quiz"></div>
+
+<div class="container hidden" id="adminPanel">
+    <h2>Админ панель</h2>
+    <div id="results"></div>
+    <h3>Редактировать список</h3>
+    <textarea id="editList" rows="10" cols="40"></textarea><br>
+    <button onclick="saveList()">Сохранить список</button>
+</div>
+
+<script>
+let products = JSON.parse(localStorage.getItem("products")) || [
+"Яблоко","Банан","Апельсин","Груша","Вишня","Клубника","Ананас",
+"Манго","Киви","Арбуз","Дыня","Слива","Персик","Гранат",
+"Помидор","Огурец","Морковь","Картофель","Лук","Чеснок",
+"Брокколи","Капуста","Перец","Кукуруза","Свёкла","Баклажан","Кабачок"
+];
+
+let answers = {};
+let currentUser = "";
+
+function start() {
+    const name = document.getElementById("name").value;
+    if (!name) return alert("Введите имя");
+    currentUser = name;
+    document.getElementById("login").classList.add("hidden");
+    showQuiz();
+}
+
+function showQuiz() {
+    const quiz = document.getElementById("quiz");
+    quiz.innerHTML = "<h2>Оцените продукты</h2>";
+
+    products.forEach((p, i) => {
+        quiz.innerHTML += `
+        <div>
+            ${p}:
+            <input type="number" min="0" max="10" onchange="saveAnswer(${i}, this.value)">
+        </div>`;
+    });
+
+    quiz.innerHTML += `<br><button onclick="submit()">Сохранить</button>`;
+    quiz.classList.remove("hidden");
+}
+
+function saveAnswer(i, val) {
+    answers[products[i]] = val;
+}
+
+function submit() {
+    let all = JSON.parse(localStorage.getItem("results")) || [];
+    all.push({name: currentUser, answers});
+    localStorage.setItem("results", JSON.stringify(all));
+    alert("Сохранено!");
+    location.reload();
+}
+
+function adminLogin() {
+    let code = prompt("Введите код:");
+    if (code === "5267") {
+        document.getElementById("login").classList.add("hidden");
+        showAdmin();
+    } else {
+        alert("Неверный код");
+    }
+}
+
+function showAdmin() {
+    const panel = document.getElementById("adminPanel");
+    const resultsDiv = document.getElementById("results");
+
+    let data = JSON.parse(localStorage.getItem("results")) || [];
+
+    resultsDiv.innerHTML = "<h3>Результаты:</h3>";
+
+    data.forEach((user, index) => {
+        resultsDiv.innerHTML += `<div><b>${user.name}</b><br>`;
+        for (let key in user.answers) {
+            resultsDiv.innerHTML += `${key}: ${user.answers[key]}<br>`;
+        }
+        resultsDiv.innerHTML += `<button onclick="deleteUser(${index})">Удалить</button><hr></div>`;
+    });
+
+    document.getElementById("editList").value = products.join("\n");
+    panel.classList.remove("hidden");
+}
+
+function deleteUser(i) {
+    let data = JSON.parse(localStorage.getItem("results"));
+    data.splice(i,1);
+    localStorage.setItem("results", JSON.stringify(data));
+    showAdmin();
+}
+
+function saveList() {
+    let newList = document.getElementById("editList").value.split("\n");
+    products = newList;
+    localStorage.setItem("products", JSON.stringify(products));
+    alert("Список обновлён!");
+}
+</script>
+
+</body>
+</html>
